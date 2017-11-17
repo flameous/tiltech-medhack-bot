@@ -74,6 +74,9 @@ class Database:
             raise BaseException('/save_user error, response text: --' + r.text)
         return
 
+    def reset(self):
+        requests.post(self.addr_port + '/reset')
+
 
 class Logic:
     def __init__(self, db: Database):
@@ -95,14 +98,19 @@ class Logic:
             # если это новый юзер
             self.db.save_user(User(uid, state=state_new_user))
             # сохраняем юзера в бд и возвращаем приветствие
-            return "welcome to herd!"
+            return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!"
 
         # юзер уже в бд
-
+        # --- начало
         # юзер не подтвердил свою личность (фотка паспорта / другое)
         if not u.verified:
             pass
 
-        # юзер ...
-        # ...
-        return "not handled!"
+        # --- конец логики
+        return "Если ты видишь это сообщение, то программисту лучше смотреть свой код! :)" \
+               "\n" \
+               "Кстати, ты написал: '%s'" % message
+
+    def reset(self):
+        self.db.reset()
+        pass
