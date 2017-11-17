@@ -83,6 +83,9 @@ class Logic:
         self.db = db
         pass
 
+    def set_state_and_save(self, u: User, state: str):
+        u.state = state
+        self.db.save_user(u)
 
     def handle(self, uid: int, message: str) -> str:
         """
@@ -102,18 +105,18 @@ class Logic:
             return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!"
 
         if u.state == state_new_user:
-            u.state = state_user_undefined
+            self.set_state_and_save(u, state_user_undefined)
             return "Вы согласны работать в системе, да или нет"
 
         if u.state == state_user_undefined:
-             if message == "да":
-                 u.state == state_user_agree
-                 self.db.save_user(u)
-                 return "Молодец, ты будешь авторизован"
-             elif message == "нет":
-                 u.state == state_user_disagree
-                 return "Молодец, ты будешь авторизован"
-             else:
+            message = message.lower().strip()
+            if message == "да":
+                self.set_state_and_save(u, state_user_agree)
+                return "Молодец, ты будешь авторизован"
+            elif message == "нет":
+                self.set_state_and_save(u, state_user_disagree)
+                return "Молодец, ты будешь авторизован"
+            else:
                 return "Ничего не понял, да или нет"
 
         # юзер уже в бд
