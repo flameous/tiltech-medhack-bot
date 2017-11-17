@@ -30,7 +30,7 @@ class User:
 
 
 class Database:
-    def __init__(self, addr_port: str = "http://80.211.129.44:8100"):
+    def __init__(self, addr_port: str = "http://80.211.129.44:8100/bot"):
         """
         Обёртка для БД
         :param addr_port: адрес и порт удалённого сервера с БД
