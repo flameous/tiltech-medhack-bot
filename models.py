@@ -4,9 +4,9 @@ import requests
 import json
 
 state_new_user = "state_new_user"
-state_smth = "implement me!"
-state_smth_2 = "implement me!"
-state_smth_3 = "implement me!"
+state_user_undefined = "state_user_undefined"
+state_user_agree = "state_user_agree"
+state_user_disagree = "state_user_disagree"
 state_smth_4 = "implement me!"
 
 
@@ -83,6 +83,7 @@ class Logic:
         self.db = db
         pass
 
+
     def handle(self, uid: int, message: str) -> str:
         """
         Общая логика бота
@@ -100,10 +101,28 @@ class Logic:
             # сохраняем юзера в бд и возвращаем приветствие
             return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!"
 
+        if u.state == state_new_user:
+            u.state = state_user_undefined
+            return "Вы согласны работать в системе, да или нет"
+
+        if u.state == state_user_undefined:
+             if message == "да":
+                 u.state == state_user_agree
+                 self.db.save_user(u)
+                 return "Молодец, ты будешь авторизован"
+             elif message == "нет":
+                 u.state == state_user_disagree
+                 return "Молодец, ты будешь авторизован"
+             else:
+                return "Ничего не понял, да или нет"
+
         # юзер уже в бд
         # --- начало
         if message == '123':
             return "Yahoo"
+        if message == 'uid':
+            return str(uid)
+
         # юзер не подтвердил свою личность (фотка паспорта / другое)
         if not u.verified:
             pass
