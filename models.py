@@ -102,6 +102,8 @@ class Logic:
 
         # юзер уже в бд
         # --- начало
+        if message == '123':
+            return "Yahoo"
         # юзер не подтвердил свою личность (фотка паспорта / другое)
         if not u.verified:
             pass
