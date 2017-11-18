@@ -9,26 +9,26 @@ import models
 
 bot = telebot.TeleBot(config.token)
 
-
+#ЛВЧ вспышка базы
 @bot.message_handler(commands=["reset"])
 def reset_database(message):
     uid = message.chat.id
     logic.reset()
     bot.send_message(uid, "База очищена, прошлое забыто!", reply_markup=types.ReplyKeyboardRemove())
 
-
+#Получение сообщения
 @bot.callback_query_handler(func=lambda call: True)
 def foo(call):
     uid, message = call.message.chat.id, call.data
     meta_handler(uid, message)
 
-
+#Отправка сообщения
 @bot.message_handler(content_types=["text"])
 def handle(message):
     uid, message = message.chat.id, message.text
     meta_handler(uid, message)
 
-
+#Кнопки
 def meta_handler(uid: int, message: str, **kwargs):
     markup = types.ReplyKeyboardRemove()
     try:
