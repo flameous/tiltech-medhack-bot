@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import traceback
+
 import config
 import telebot
 from telebot import types
@@ -32,12 +34,12 @@ def meta_handler(uid: int, message: str, **kwargs):
     try:
         answer, *buttons = logic.handle(uid, message)
         if buttons:
-            markup = types.InlineKeyboardMarkup()
-            for b in buttons:
-                markup.add(types.InlineKeyboardButton(b, callback_data='button_' + b))
+            markup = buttons[0]
 
-    except Exception as e:
+    except BaseException as e:
         answer = "Ошибка! : %s" % e
+        traceback.print_tb(e.__traceback__)
+
     bot.send_message(uid, answer, reply_markup=markup)
 
 

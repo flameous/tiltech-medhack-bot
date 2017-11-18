@@ -1,13 +1,27 @@
-import http.client
+from telebot import types
 
 import requests
 import json
+from text import *
 
-state_new_user = "state_new_user"
-state_user_undefined = "state_user_undefined"
-state_user_agree = "state_user_agree"
-state_user_disagree = "state_user_disagree"
-state_cm_im = "state_cm_im"
+state_user_terms_undefined = "state_user_terms_undefined"
+state_user_terms_agree = "state_user_terms_agree"
+state_user_terms_disagree = "state_user_terms_disagree"
+state_user_cm_visit = "state_user_cm_visit"
+
+agree = 'Согласен'
+disagree = 'Не согласен'
+chat_with_cm = 'Связаться с кейс-менеджером'
+open_jira = 'Открыть веб-интерфейс'
+change_opinion = 'Я передумал!'
+reset = 'reset!'
+
+buttons_data = {v: str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset))}
+
+buttons_terms = types.InlineKeyboardMarkup()
+buttons_terms.row(types.InlineKeyboardButton('terms of use', url='http://google.com'))
+buttons_terms.row(types.InlineKeyboardButton(agree, callback_data=buttons_data[agree]),
+                  types.InlineKeyboardButton(disagree, callback_data=buttons_data[disagree]))
 
 
 class User:
@@ -93,40 +107,33 @@ class Logic:
 
         :param uid: id юзера
         :param message: его сообщение
-        :return: сообщение/кнопка, отсылаемое юзеру
+        :return: сообщение, отсылаемое юзеру (опционально: кнопки)
         """
 
         # достаём юзера
         u = self.db.get_user(uid)
         if not u:
             # если это новый юзер
-            self.db.save_user(User(uid, state=state_new_user))
+            self.db.save_user(User(uid, state=state_user_terms_undefined))
             # сохраняем юзера в бд и возвращаем приветствие
-            return "Здравствуйте! Вас приветсвует бот клиники 'Panacea' \n как я могу вам помочь? ", 'Написать терапевту', 'Авторизоваться', 'кнопка3', 'кнопка4'
+            return text_hello, buttons_terms
 
+        if u.state == state_user_terms_undefined:
+            if message == buttons_data[agree]:
+                self.set_state_and_save(u, state_user_terms_agree)
+                return text_agree,
 
-        if u.state == state_new_user:
-            self.set_state_and_save(u, state_user_undefined)
-            return "Вы согласны работать в системе, да или нет",
-
-        if u.state == state_user_undefined:
-            message = message.lower().strip()
-            if message == "да":
-                self.set_state_and_save(u, state_user_agree)
-                return "Молодец, ты будешь авторизован",
-            elif message == "нет":
-                self.set_state_and_save(u, state_user_disagree)
-                return "Молодец, ты будешь авторизован",
+            elif message == buttons_data[disagree]:
+                self.set_state_and_save(u, state_user_terms_disagree)
+                return text_disagree
 
             else:
-                return "Ничего не понял, да или нет", 'кнопка1', 'кнопка2', 'кнопка3', 'кнопка4'
+                return text_terms_undefined,
 
-        # юзер уже в бд
         # --- начало
-        if message == '123':
-            return "Yahoo",
-        if message == 'uid':
-            return str(uid),
+
+        if u.state == state_user_terms_disagree:
+            return text_terms_rethink, buttons_terms
 
         # юзер не подтвердил свою личность (фотка паспорта / другое)
         if not u.verified:
@@ -135,7 +142,7 @@ class Logic:
         # --- конец логики
         return "Если ты видишь это сообщение, то программисту лучше смотреть свой код! :)" \
                "\n" \
-               "Кстати, ты написал: '%s'" % message, 'yes', 'no'
+               "Кстати, ты написал: '%s'" % message,
 
     def reset(self):
         self.db.reset()
