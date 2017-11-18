@@ -32,9 +32,9 @@ def handle(message):
 def meta_handler(uid: int, message: str, **kwargs):
     markup = types.ReplyKeyboardRemove()
     try:
-        answer, *buttons = logic.handle(uid, message)
+        answer, buttons = logic.handle(uid, message)
         if buttons:
-            markup = buttons[0]
+            markup = buttons
 
     except BaseException as e:
         answer = "Ошибка! : %s" % e

@@ -9,13 +9,12 @@ state_user_terms_agree = "state_user_terms_agree"
 state_user_terms_disagree = "state_user_terms_disagree"
 state_user_cm_visit = "state_user_cm_visit"
 state_user_old = "state_user_old"
-state_user_live_meeting_md  = "state_user_live_meeting_md"
-state_user_video_call  = "state_user_video_call"
-state_user_phone_call  = "state_user_phone_call"
-state_user_im_cm_chat  = "state_user_im_cm_chat"
+state_user_live_meeting_md = "state_user_live_meeting_md"
+state_user_video_call = "state_user_video_call"
+state_user_phone_call = "state_user_phone_call"
+state_user_im_cm_chat = "state_user_im_cm_chat"
 state_user_select_consultant = "state_user_select_consultant"
 state_user_send_photo = "state_user_send_photo"
-
 
 agree = 'Согласен'
 disagree = 'Не согласен'
@@ -31,25 +30,49 @@ live_meeting_md = 'Прийти на очный прием'
 video_call = 'Видеосвязь'
 phone_call = 'Созвониться по телефону'
 im_cm_chat = 'Чат со специалистом'
-<<<<<<< HEAD
 back = 'Назад'
 add_cart = 'Добавить направление'
 all_cart = 'Все направления'
 
-buttons_data = {v: 'button_'+str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset, yes, no, send_pic, im_cm, live_meeting_md, video_call, phone_call, im_cm_chat, back, add_cart, all_cart))}
-=======
+buttons_data = {v: 'button_' + str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset, yes, no,
+                                                             send_pic, im_cm, live_meeting_md, video_call, phone_call,
+                                                             im_cm_chat, back, add_cart, all_cart))}
 
 
-buttons_data = {v: 'button_'+str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset, yes, no, send_pic, im_cm, live_meeting_md, video_call, phone_call, im_cm_chat))}
->>>>>>> 34f4098eb4ac1bb0355e031a06ed1881b48df8ad
+def row_inline(markup, rows):
+    for row in rows:
+        markup.row(*[types.InlineKeyboardButton(b, callback_data=buttons_data[b]) for b in row])
+
+
+def row_reply(markup, rows):
+    for row in rows:
+        markup.row(*[types.KeyboardButton(b) for b in row])
+
+
+# generate_buttons([A, B, C], [D, E])
+# [A - B - C]
+# [D ----- E]
+def generate_buttons(*rows, inline=True):
+    if inline:
+        markup = types.InlineKeyboardMarkup()
+        f = row_inline
+    else:
+        markup = types.ReplyKeyboardMarkup()
+        f = row_reply
+
+    f(markup, rows)
+    return markup
+
 
 buttons_terms = types.InlineKeyboardMarkup()
 buttons_terms.row(types.InlineKeyboardButton('terms of use', url='http://google.com'))
 buttons_terms.row(types.InlineKeyboardButton(agree, callback_data=buttons_data[agree]),
                   types.InlineKeyboardButton(disagree, callback_data=buttons_data[disagree]))
+
 buttons_terms2 = types.InlineKeyboardMarkup()
 buttons_terms2.row(types.InlineKeyboardButton(yes, callback_data=buttons_data[yes]),
-                  types.InlineKeyboardButton(no, callback_data=buttons_data[no]))
+                   types.InlineKeyboardButton(no, callback_data=buttons_data[no]))
+
 buttons_send_pic_or_im_cm = types.InlineKeyboardMarkup()
 buttons_send_pic_or_im_cm.row(types.InlineKeyboardButton(send_pic, callback_data=buttons_data[send_pic]))
 buttons_send_pic_or_im_cm.row(types.InlineKeyboardButton(im_cm, callback_data=buttons_data[im_cm]))
@@ -66,12 +89,10 @@ buttons_consultation.row(types.InlineKeyboardButton(video_call, callback_data=bu
 buttons_consultation.row(types.InlineKeyboardButton(phone_call, callback_data=buttons_data[phone_call]))
 buttons_consultation.row(types.InlineKeyboardButton(im_cm_chat, callback_data=buttons_data[im_cm_chat]))
 
-<<<<<<< HEAD
 buttons_back = types.InlineKeyboardMarkup()
 buttons_back.row(types.InlineKeyboardButton(back, callback_data=buttons_data[back]))
-=======
 
->>>>>>> 34f4098eb4ac1bb0355e031a06ed1881b48df8ad
+
 class User:
     def __init__(self, uid: int, login: str = "no_login", state: str = "state_new_user"):
         self.uid = uid
@@ -171,12 +192,9 @@ class Logic:
                 self.set_state_and_save(u, state_user_terms_agree)
                 return text_thanks_and_how_help, buttons_send_pic_or_im_cm
 
-
             elif message == buttons_data[yes]:
                 self.set_state_and_save(u, state_user_terms_undefined)
                 return text_no_support, buttons_no
-
-
 
         if u.state == state_user_terms_agree:
             if message == buttons_data[im_cm]:
@@ -192,7 +210,6 @@ class Logic:
                 self.set_state_and_save(u, state_user_send_photo)
                 return text_all_cart, buttons_back
 
-
         if u.state == state_user_select_consultant:
             if message == buttons_data[live_meeting_md]:
                 self.set_state_and_save(u, state_user_live_meeting_md)
@@ -206,7 +223,6 @@ class Logic:
             elif message == buttons_data[im_cm_chat]:
                 self.set_state_and_save(u, state_user_im_cm_chat)
                 return nepridumal, buttons_back
-
 
         if message == buttons_data[back]:
             self.set_state_and_save(u, state_user_terms_agree)
@@ -234,9 +250,6 @@ class Logic:
             elif message == buttons_data[im_cm_chat]:
                 self.set_state_and_save(u, state_user_im_cm_chat)
                 return nepridumal,
-
-
-
 
         #
         # else:
