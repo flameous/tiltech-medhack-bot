@@ -7,7 +7,7 @@ state_new_user = "state_new_user"
 state_user_undefined = "state_user_undefined"
 state_user_agree = "state_user_agree"
 state_user_disagree = "state_user_disagree"
-state_smth_4 = "implement me!"
+state_cm_im = "state_cm_im"
 
 
 class User:
@@ -102,7 +102,8 @@ class Logic:
             # если это новый юзер
             self.db.save_user(User(uid, state=state_new_user))
             # сохраняем юзера в бд и возвращаем приветствие
-            return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!",
+            return "Здравствуйте! Вас приветсвует бот клиники 'Panacea' \n как я могу вам помочь? ", 'Написать терапевту', 'Авторизоваться', 'кнопка3', 'кнопка4'
+
 
         if u.state == state_new_user:
             self.set_state_and_save(u, state_user_undefined)
