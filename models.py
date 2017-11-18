@@ -9,6 +9,13 @@ state_user_terms_agree = "state_user_terms_agree"
 state_user_terms_disagree = "state_user_terms_disagree"
 state_user_cm_visit = "state_user_cm_visit"
 state_user_old = "state_user_old"
+state_user_live_meeting_md  = "state_user_live_meeting_md"
+state_user_video_call  = "state_user_video_call"
+state_user_phone_call  = "state_user_phone_call"
+state_user_im_cm_chat  = "state_user_im_cm_chat"
+state_user_select_consultant = "state_user_select_consultant"
+state_user_send_photo = "state_user_send_photo"
+
 
 agree = 'Согласен'
 disagree = 'Не согласен'
@@ -19,9 +26,14 @@ reset = 'reset!'
 yes = 'Да, лечился раньше'
 no = 'Нет, я впервые'
 send_pic = 'Отправить результаты анализов для оцифровки'
-im_cm = 'Проконсультироваться с врачом (кейс менеджером)'
+im_cm = 'Проконсультироваться с врачом(кейс менеджером)'
+live_meeting_md = 'Прийти на очный прием'
+video_call = 'Видеосвязь'
+phone_call = 'Созвониться по телефону'
+im_cm_chat = 'Чат со специалистом'
 
-buttons_data = {v: 'button_'+str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset, yes, no, send_pic, im_cm))}
+
+buttons_data = {v: 'button_'+str(k) for k, v in enumerate((agree, disagree, open_jira, change_opinion, reset, yes, no, send_pic, im_cm, live_meeting_md, video_call, phone_call, im_cm_chat))}
 
 buttons_terms = types.InlineKeyboardMarkup()
 buttons_terms.row(types.InlineKeyboardButton('terms of use', url='http://google.com'))
@@ -36,6 +48,13 @@ buttons_send_pic_or_im_cm.row(types.InlineKeyboardButton(im_cm, callback_data=bu
 
 buttons_no = types.InlineKeyboardMarkup()
 buttons_no.row(types.InlineKeyboardButton(no, callback_data=buttons_data[no]))
+
+buttons_consultation = types.InlineKeyboardMarkup()
+buttons_consultation.row(types.InlineKeyboardButton(live_meeting_md, callback_data=buttons_data[live_meeting_md]))
+buttons_consultation.row(types.InlineKeyboardButton(video_call, callback_data=buttons_data[video_call]))
+buttons_consultation.row(types.InlineKeyboardButton(phone_call, callback_data=buttons_data[phone_call]))
+buttons_consultation.row(types.InlineKeyboardButton(im_cm_chat, callback_data=buttons_data[im_cm_chat]))
+
 
 class User:
     def __init__(self, uid: int, login: str = "no_login", state: str = "state_new_user"):
@@ -139,7 +158,33 @@ class Logic:
 
             elif message == buttons_data[yes]:
                 self.set_state_and_save(u, state_user_terms_undefined)
-                return no_lie, buttons_no
+                return text_no_support, buttons_no
+
+        if u.state == state_user_terms_agree:
+            if message == buttons_data[im_cm]:
+                self.set_state_and_save(u, state_user_select_consultant)
+                return text_consultant, buttons_consultation,
+            elif message == buttons_data[send_pic]:
+                self.set_state_and_save(u, state_user_send_photo)
+                return text_send_photo,
+
+        if u.state == state_user_select_consultant:
+
+            if message == buttons_data[live_meeting_md]:
+                self.set_state_and_save(u, state_user_live_meeting_md)
+                return choose_time,
+            elif message == buttons_data[video_call]:
+                self.set_state_and_save(u, state_user_video_call)
+                return text_video_call,
+            elif message == buttons_data[phone_call]:
+                self.set_state_and_save(u, state_user_phone_call)
+                return text_phone_call,
+            elif message == buttons_data[im_cm_chat]:
+                self.set_state_and_save(u, state_user_im_cm_chat)
+                return nepridumal,
+
+
+
         #
         # else:
         #         return text_terms_undefined,
