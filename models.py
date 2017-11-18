@@ -176,7 +176,7 @@ class Logic:
                 self.set_state_and_save(u, state_user_terms_undefined)
                 return text_no_support, buttons_no
 
-<<<<<<< HEAD
+
 
         if u.state == state_user_terms_agree:
             if message == buttons_data[im_cm]:
@@ -211,7 +211,7 @@ class Logic:
         if message == buttons_data[back]:
             self.set_state_and_save(u, state_user_terms_agree)
             return text_thanks_and_how_help, buttons_send_pic_or_im_cm
-=======
+
         if u.state == state_user_terms_agree:
             if message == buttons_data[im_cm]:
                 self.set_state_and_save(u, state_user_select_consultant)
@@ -234,7 +234,7 @@ class Logic:
             elif message == buttons_data[im_cm_chat]:
                 self.set_state_and_save(u, state_user_im_cm_chat)
                 return nepridumal,
->>>>>>> 34f4098eb4ac1bb0355e031a06ed1881b48df8ad
+
 
 
 
