@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import config
 import telebot
+from telebot import types
 
 import models
 
@@ -11,18 +12,33 @@ bot = telebot.TeleBot(config.token)
 def reset_database(message):
     uid = message.chat.id
     logic.reset()
-    bot.send_message(uid, "База очищена, прошлое забыто!")
+    bot.send_message(uid, "База очищена, прошлое забыто!", reply_markup=types.ReplyKeyboardRemove())
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def foo(call):
+    uid, message = call.message.chat.id, call.data
+    meta_handler(uid, message)
 
 
 @bot.message_handler(content_types=["text"])
-def repeat_all_messages(message):
-    uid, text = message.chat.id, message.text
+def handle(message):
+    uid, message = message.chat.id, message.text
+    meta_handler(uid, message)
+
+
+def meta_handler(uid: int, message: str, **kwargs):
+    markup = types.ReplyKeyboardRemove()
     try:
-        answer = logic.handle(uid, text)
+        answer, *buttons = logic.handle(uid, message)
+        if buttons:
+            markup = types.InlineKeyboardMarkup()
+            for b in buttons:
+                markup.add(types.InlineKeyboardButton(b, callback_data='button_' + b))
+
     except Exception as e:
         answer = "Ошибка! : %s" % e
-
-    bot.send_message(uid, answer)
+    bot.send_message(uid, answer, reply_markup=markup)
 
 
 if __name__ == '__main__':

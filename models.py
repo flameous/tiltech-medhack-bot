@@ -87,7 +87,7 @@ class Logic:
         u.state = state
         self.db.save_user(u)
 
-    def handle(self, uid: int, message: str) -> str:
+    def handle(self, uid: int, message: str) -> tuple:
         """
         Общая логика бота
 
@@ -102,29 +102,30 @@ class Logic:
             # если это новый юзер
             self.db.save_user(User(uid, state=state_new_user))
             # сохраняем юзера в бд и возвращаем приветствие
-            return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!"
+            return "Бот увидел вас в первый раз! В следующий раз он ответит вам кое-что другое!",
 
         if u.state == state_new_user:
             self.set_state_and_save(u, state_user_undefined)
-            return "Вы согласны работать в системе, да или нет"
+            return "Вы согласны работать в системе, да или нет",
 
         if u.state == state_user_undefined:
             message = message.lower().strip()
             if message == "да":
                 self.set_state_and_save(u, state_user_agree)
-                return "Молодец, ты будешь авторизован"
+                return "Молодец, ты будешь авторизован",
             elif message == "нет":
                 self.set_state_and_save(u, state_user_disagree)
-                return "Молодец, ты будешь авторизован"
+                return "Молодец, ты будешь авторизован",
+
             else:
-                return "Ничего не понял, да или нет"
+                return "Ничего не понял, да или нет", 'кнопка1', 'кнопка2', 'кнопка3', 'кнопка4'
 
         # юзер уже в бд
         # --- начало
         if message == '123':
-            return "Yahoo"
+            return "Yahoo",
         if message == 'uid':
-            return str(uid)
+            return str(uid),
 
         # юзер не подтвердил свою личность (фотка паспорта / другое)
         if not u.verified:
@@ -133,7 +134,7 @@ class Logic:
         # --- конец логики
         return "Если ты видишь это сообщение, то программисту лучше смотреть свой код! :)" \
                "\n" \
-               "Кстати, ты написал: '%s'" % message
+               "Кстати, ты написал: '%s'" % message, 'yes', 'no'
 
     def reset(self):
         self.db.reset()
