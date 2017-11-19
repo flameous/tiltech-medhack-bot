@@ -84,7 +84,6 @@ def handle_pictures(message):
 def reset_database(message):
     uid = message.chat.id
     logic.reset()
-
     bot.send_message(uid, "База очищена, прошлое забыто!", reply_markup=types.ReplyKeyboardRemove())
 
 
