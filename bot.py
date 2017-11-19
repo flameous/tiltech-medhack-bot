@@ -116,11 +116,12 @@ def meta_handler(uid: int, message: str, **kwargs):
 if __name__ == '__main__':
     d = models.Database()
     logic = models.Logic(d)
+    bot.remove_webhook()
 
     if len(sys.argv) == 1:
         bot.polling(none_stop=True)
     else:
-        bot.remove_webhook()
+
         bot.set_webhook(
             url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
             certificate=open(WEBHOOK_SSL_CERT, 'r')
