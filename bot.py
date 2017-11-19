@@ -34,7 +34,7 @@ def handle_chat():
     form = request.form
     uid = form.get('uid')
     text = form.get('text')
-    logic.handle_chat(uid, text)
+    bot.send_message(int(uid), text + "\n\nОтвет кейс-менеджера", reply_markup=logic.markup_button_back())
     return "ok"
 
 
@@ -58,13 +58,16 @@ def start_conversation(message):
 @bot.message_handler(content_types=['contact'])
 def handle_contact_number(message):
     uid, contact = message.chat.id, message.contact.phone_number
-    msg = logic.handle_contact_number(uid, contact)
-    bot.send_message(uid, msg)
+    bot.send_message(uid, "Спасибо", reply_markup=types.ReplyKeyboardRemove())
+
+    msg, markup = logic.handle_save_number(uid, contact)
+    bot.send_message(uid, msg, reply_markup=markup)
 
 
+# TODO: Встроить CV
 @bot.message_handler(content_types=['photo'])
 def handle_pictures(message):
-    answer = 'Ваш файл получен'
+    answer = 'Ваш файл обработан!'
     try:
         url = bot.get_file(message.photo[-1].file_id).file_path
         fp = url.split("/")[-1]
@@ -88,7 +91,7 @@ def reset_database(message):
 
 
 @bot.callback_query_handler(func=lambda call: True)
-def foo(call):
+def handle_inline_buttons(call):
     uid, message = call.message.chat.id, call.data
     meta_handler(uid, message)
 
@@ -99,7 +102,7 @@ def handle(message):
     meta_handler(uid, message)
 
 
-def meta_handler(uid: int, message: str, **kwargs):
+def meta_handler(uid: int, message: str):
     markup = types.ReplyKeyboardRemove()
     try:
         answer, buttons = logic.handle(uid, message)
@@ -110,7 +113,8 @@ def meta_handler(uid: int, message: str, **kwargs):
         answer = "Ошибка! : %s" % e
         traceback.print_tb(e.__traceback__)
 
-    bot.send_message(uid, answer, reply_markup=markup)
+    if answer:
+        bot.send_message(uid, answer, reply_markup=markup)
 
 
 if __name__ == '__main__':
