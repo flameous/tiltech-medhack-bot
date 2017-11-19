@@ -96,7 +96,7 @@ class Logic:
     def menu():
         markup = types.InlineKeyboardMarkup()
         markup.row(*[ikb(button_chat, callback_data=button_chat)])
-        markup.row(*[ikb(button_open_jira, callback_data=button_open_jira, url="http://bash.im/")])
+        markup.row(*[ikb(button_open_jira, callback_data=button_open_jira, url="http://panacea.cloud/")])
         markup.row(*[ikb(button_back_to_menu, callback_data=button_back_to_menu)])
         return "Добро пожаловать в систему!", markup
 
